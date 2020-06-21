@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <include file = "$(find eufs_gazebo)/launch/small_track.launch"/>
+    <include file = "$(find sim_simple_controller)/launch/robot_control.launch"/>
+    <include file = "$(find rl_srt)/launch/srt_training.launch"/>
+</launch>

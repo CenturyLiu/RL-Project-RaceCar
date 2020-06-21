@@ -1,0 +1,21 @@
+rl_srt:
+    alpha: 0.1
+    gamma: 0.7
+    epsilon: 0.5
+    epsilon_discount: 0.999
+    nepisodes: 50
+    nsteps: 100000
+    number_splits: 100
+    
+    running_step: 0.06
+    wait_time: 0.1
+
+    n_actions: 20
+
+    speed_step: 0.1
+    max_speed: 10.0
+    min_speed: 0.0
+    max_angular_vel: 0.53
+    min_angular_vel: -0.53
+
+    end_episode_points: 1000 

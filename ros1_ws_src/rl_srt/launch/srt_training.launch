@@ -1,0 +1,5 @@
+<launch>
+    <rosparam command="load" file="$(find rl_srt)/config/rl_qlearning_params.yaml"/>
+    <!-- Launch the training system -->
+    <node pkg = "rl_srt" name = "srt_rl_gym" type="training.py" output="screen"/>
+</launch>
