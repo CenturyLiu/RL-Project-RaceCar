@@ -1,0 +1,5 @@
+# input: raw image from camera
+sensor_msgs/Image image
+geometry_msgs/Twist curr_vel
+---
+geometry_msgs/Twist next_vel
