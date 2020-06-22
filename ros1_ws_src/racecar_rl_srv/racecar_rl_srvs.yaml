@@ -1,0 +1,5 @@
+-
+  ros1_package_name: 'racecar_rl_srv'
+  ros1_service_name: 'Image2Vel'
+  ros2_package_name: 'racecar_rl_srv'
+  ros2_service_name: 'Image2Vel'
