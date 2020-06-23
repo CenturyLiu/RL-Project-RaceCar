@@ -1,0 +1,4 @@
+# ROS1-agent-wrapper sends the request to store the weight of the rl-agent, ROS2-agent stores the agent weights and returns the confirmation
+std_msgs/Bool store_request
+---
+std_msgs/Bool store_confirmation

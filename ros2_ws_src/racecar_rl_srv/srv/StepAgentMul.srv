@@ -1,0 +1,11 @@
+# ROS1-agent-wrapper sends the tuple (state,action,reward,next_state,done,timestep), ROS2-agent stores the tuple and send a confirmation back
+sensor_msgs/Image state_img
+geometry_msgs/Twist state_vel
+geometry_msgs/Twist action
+std_msgs/Float32 reward
+sensor_msgs/Image next_state_img
+geometry_msgs/Twist next_state_vel
+std_msgs/Bool done
+std_msgs/Float32 timestep
+---
+std_msgs/Bool confirmation

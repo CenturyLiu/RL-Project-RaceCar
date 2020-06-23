@@ -1,0 +1,4 @@
+# ROS1-agent-wrapper sends the request to reset rl-agent, ROS2-agent resets the agent and returns the confirmation
+std_msgs/Bool reset_request
+---
+std_msgs/Bool reset_confirmation

@@ -36,7 +36,11 @@ endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
     "srv/Image2Vel.srv"
-    DEPENDENCIES geometry_msgs sensor_msgs
+    "srv/ResetAgent.srv"
+    "srv/StepAgent.srv"
+    "srv/StepAgentMul.srv"
+    "srv/StoreWeights.srv"
+    DEPENDENCIES geometry_msgs sensor_msgs std_msgs
   )
 
 #install(
