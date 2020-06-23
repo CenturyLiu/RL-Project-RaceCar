@@ -60,6 +60,10 @@ find_package(catkin REQUIRED COMPONENTS
  add_service_files(
    FILES
    Image2Vel.srv
+   ResetAgent.srv
+   StepAgent.srv
+   StepAgentMul.srv
+   StoreWeights.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -72,7 +76,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-   geometry_msgs   sensor_msgs#   std_msgs
+   geometry_msgs   sensor_msgs   std_msgs
  )
 
 ################################################

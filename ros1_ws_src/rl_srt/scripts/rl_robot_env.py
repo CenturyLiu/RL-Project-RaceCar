@@ -47,7 +47,7 @@ class Srt_robot_env(modified_robot_gazebo_env.RobotGazeboEnv):
         print("created image listeners")
         self.odom_listener = OdomListener()#the listener for the car model
         print("created odom listeners")
-        #self.state_listener = RobotStateListener()#listener for the robot's speed and angle
+        self.state_listener = RobotStateListener()#listener for the robot's speed and angle
         print("create state listeners")
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path('rl_srt')
@@ -106,6 +106,12 @@ class Srt_robot_env(modified_robot_gazebo_env.RobotGazeboEnv):
 
     def get_latest_image(self):
         return self.image_listener.get_image()
+
+    def get_lastest_imgmsg(self):
+        return self.image_listener.get_imgmsg()
+
+    def get_latest_speed(self):
+        return self.state_listener.get_car_state()
 
     def get_latest_odom(self):
         return self.odom_listener.get_car_pos()

@@ -4,6 +4,7 @@ from gym.envs.registration import register
 import rospy
 import numpy as np
 from geometry_msgs.msg import Twist
+from ackermann_msgs.msg import AckermannDriveStamped
 import math
 from image_process import Cone_detect
 from std_srvs.srv import Empty
@@ -25,58 +26,34 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
     def __init__(self):
         
         # Only variable needed to be set here
-        number_actions = rospy.get_param('/rl_srt/n_actions')
-        self.action_space = spaces.Discrete(number_actions)
-        max_height = np.inf
-        max_width = np.inf
-        min_height = 0
-        min_width = 0
-        self.max_speed = rospy.get_param('/rl_srt/max_speed')
-        self.min_speed = rospy.get_param('rl_srt/min_speed')
-        self.max_angular_vel = rospy.get_param('/rl_srt/max_angular_vel')
-        self.min_angular_vel = rospy.get_param('/rl_srt/min_angular_vel')
+        self.number_actions = 2#rospy.get_param('/rl_srt/n_actions')
 
-        high = np.array([
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            max_height,
-            max_width,
-            self.max_speed,
-            self.max_angular_vel
+        self.max_speed = 40.0#rospy.get_param('/rl_srt/max_speed')
+        self.min_speed = 20.0#rospy.get_param('rl_srt/min_speed')
+        self.max_steer = 1.0#rospy.get_param('/rl_srt/max_steer')
+        self.min_steer = -1.0#rospy.get_param('/rl_srt/min_steer')
+        self.move_time = 0.1#rospy.get_param('/rl_srt/move_time')
+
+        high_action = np.array([
+            self.max_steer,
+            self.max_speed
             ])
-        low = np.array([
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            min_height,
-            min_width,
-            self.min_speed,
-            self.min_angular_vel
+        low_action = np.array([
+            self.min_steer,
+            self.min_speed
             ])
-        self.observation_space = spaces.Box(low, high)
+
+
+
+        self.action_space = spaces.Box(low_action,high_action,dtype=np.float32)#spaces.Discrete(number_actions)
+
+        high_obs = np.ones((720,1280,3))#size of the image
+        high_obs = np.inf * high_obs
+
+        self.observation_space = spaces.Box(-high_obs, high_obs, dtype=np.float32)
+
+        
+
         self.initial_speed = Twist()
         self.initial_speed.linear.x = 0.0
         self.initial_speed.linear.y = 0.0
@@ -93,7 +70,7 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
 
         self.step_count = 0
 
-
+        
         #redefine the initial state of the model here
         self.state_msg = ModelState()
         self.state_msg.model_name = 'eufs'
@@ -128,87 +105,10 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
         #self.current_speed = self.initial_speed
         #self.reset_simulation()
         pass
-    '''
-    def _set_action(self, action):
-        Move the robot based on the action variable given
 
-        # We have set 9 different actions for moving the racing car:'
-
-
-                             action index table
-                         add_speed   hold_speed   decrease_speed
-        turn_left           0            1              2
-        hold_direction      3            4              5
-        turn_right          6            7              8
-
-        if action == 0:#add speed and turn left
-            self.accelerate()    
-            self.turn_left()
-        elif action == 1:
-            self.turn_left()
-        elif action == 2:
-            self.decelerate()
-            self.turn_left()
-        elif action == 3:
-            self.accelerate()
-        elif action == 4:
-            pass
-        elif action == 5:
-            self.decelerate()
-        elif action == 6:
-            self.accelerate()
-            self.turn_right()
-        elif action == 7:
-            self.turn_right()
-        elif action == 8:
-            self.decelerate()
-            self.turn_right()
-        self.move_car(self.current_speed)
-    '''
     def _set_action(self, action):
         #basic version, keep the car under constant linear velocity, only let it change the steer angle
-        if self.current_speed.linear.x == 0:
-            self.current_speed.linear.x = 5.0
-        if action == 0:#add speed and turn left
-            self.current_speed.angular.z = -1.0
-        elif action == 1:
-            self.current_speed.angular.z = -0.9
-        elif action == 2:
-            self.current_speed.angular.z = -0.8
-        elif action == 3:
-            self.current_speed.angular.z = -0.7
-        elif action == 4:
-            self.current_speed.angular.z = -0.6
-        elif action == 5:
-            self.current_speed.angular.z = -0.5
-        elif action == 6:
-            self.current_speed.angular.z = -0.4
-        elif action == 7:
-            self.current_speed.angular.z = -0.3
-        elif action == 8:
-            self.current_speed.angular.z = -0.1
-        elif action == 9:
-            self.current_speed.angular.z = 0.0
-        elif action == 10:
-            self.current_speed.angular.z = 0.1
-        elif action == 11:
-            self.current_speed.angular.z = 0.2
-        elif action == 12:
-            self.current_speed.angular.z = 0.3
-        elif action == 13:
-            self.current_speed.angular.z = 0.4
-        elif action == 14:
-            self.current_speed.angular.z = 0.5
-        elif action == 15:
-            self.current_speed.angular.z = 0.6
-        elif action == 16:
-            self.current_speed.angular.z = 0.7
-        elif action == 17:
-            self.current_speed.angular.z = 0.8
-        elif action == 18:
-            self.current_speed.angular.z = 0.9
-        elif action == 19:
-            self.current_speed.angular.z = 1.0
+        self.current_speed = action
         self.move_car(self.current_speed)
         time.sleep(0.1)
 
@@ -222,6 +122,8 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
 
         #observation structure: [(blue_pos[0],blue_pos[1],blue_pos[2],blue_pos[3]),(red_pos[0],red_pos[1],red_pos[2],red_pos[3]),odom=> (x,y),speed(Twist type),(blue_count,red_count)]
         # TODO
+
+        '''
         image = self.get_latest_image()
         odom = self.get_latest_odom()
         speed = self.current_speed
@@ -238,7 +140,17 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
         print(blue_count)
         print("red count == ")
         print(red_count)
+        
         return [blue_pos,red_pos,odom,speed,(blue_count,red_count)]
+        '''
+
+
+        imgmsg = self.get_lastest_imgmsg()
+        speed_stamp = self.get_latest_speed()
+        speed = Twist()
+        speed.linear.x = speed_stamp.drive.speed
+        speed.angular.z = speed_stamp.drive.steering_angle
+        return [imgmsg,speed]
 
     def _is_done(self, observations):
         """
@@ -246,57 +158,19 @@ class SrtTrainingEnv(rl_robot_env.Srt_robot_env):
         """
         # "observations" is a pair of coordinate frame
         #observations structure: [(blue_pos[0],blue_pos[1],blue_pos[2],blue_pos[3]),(red_pos[0],red_pos[1],red_pos[2],red_pos[3]),odom=> (x,y),speed(Twist type)]
-        return not self.checkInLane(observations[2][0],observations[2][1])
+        return False
 
     def _compute_reward(self, observations, done):
         """
         Return the reward based on the observations given
         """
-        reward = 0
-        self.step_count += 1
+        
+        linear_speed = observations[1].linear.x
         if done:
-            reward = -1000 #in total 1000 steps for each iteration
+            reward = -10 - 0.1 * linear_speed
         else:
-            blue_count = observations[4][0]
-            red_count = observations[4][1]
-            if self.inboundary(observations[2][0],observations[2][1]):
-                reward -= 0.1
-            else:
-                reward += 0.1
-            if blue_count > 0 and red_count > 0:
-                if abs(blue_count - red_count) >= 2:
-                    reward -= 2
-                else:
-                    reward += 2
-            elif blue_count == 0 and red_count > 0:
-                reward -= 10 - red_count
-            elif red_count == 0 and blue_count > 0:
-                reward -= 10 - blue_count
-            else:
-                reward -= 10
+            reward = 1 + 0.02 * linear_speed
+        
 
         return reward
-        
-    # Internal TaskEnv Methods
-    def accelerate(self):
-        if self.current_speed.linear.x == 0.0:
-            self.current_speed.linear.x = 2.0#quick start the car
-        else:
-            self.current_speed.linear.x *= 1.1#increase 10% each time
-            if self.current_speed.linear.x > 10.0:
-                self.current_speed.linear.x = 10.0
 
-    def turn_left(self):
-        self.current_speed.angular.z += 0.05
-        if self.current_speed.angular.z > 1.0:
-            self.current_speed.angular.z = 1.0
-
-    def decelerate(self):
-        self.current_speed.linear.x *= 0.9#decrease 10% each time
-        if self.current_speed.linear.x < 0.3:
-            self.current_speed.linear.x = 0.0
-
-    def turn_right(self):
-        self.current_speed.angular.z -= 0.05
-        if self.current_speed.angular.z < -1.0:
-            self.current_speed.angular.z = -1.0

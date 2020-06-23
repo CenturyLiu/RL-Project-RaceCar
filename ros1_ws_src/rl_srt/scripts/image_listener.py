@@ -32,7 +32,7 @@ class ImageListener(object):
         try:
             self.latest_imgmsg = data
             self.latest_image = self.bridge_object.imgmsg_to_cv2(data,desired_encoding="bgr8")
-            print("got new image")
+            #print("got new image")
         except CvBridgeError as e:
             print(e)
 

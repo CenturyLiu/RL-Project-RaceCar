@@ -3,7 +3,7 @@ from ackermann_msgs.msg import AckermannDriveStamped
 
 class RobotStateListener():
     def __init__(self):
-        self.latest_state = rospy.wait_for_message('/robot_control/command',AckermannDriveStamped)
+        self.latest_state = AckermannDriveStamped()#rospy.wait_for_message('/robot_control/command',AckermannDriveStamped)
         self.state_sub = rospy.Subscriber('/robot_control/command',AckermannDriveStamped,self.state_callback)
 
     def get_car_state(self):
